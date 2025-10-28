@@ -77,7 +77,7 @@ void ray_casting(person* pr) {
 		int test_y = 0;
 
 		while (!wall_flag) {
-			data.distance_to_wall += 0.1;
+			data.distance_to_wall += STEP_PRECISION;
 
 			test_x = (int) (pr->x_coord + ray_x * data.distance_to_wall);
 			test_y = (int) (pr->y_coord + ray_y * data.distance_to_wall);
@@ -92,6 +92,7 @@ void ray_casting(person* pr) {
 			
 		}
 
+		data.distance_to_wall = data.distance_to_wall * fast_cos(x_coord, NON);
 		data.ceiling_h = (int) (SCREEN_HEIGHT / 2 - SCREEN_HEIGHT / data.distance_to_wall);
 		data.floor_h = SCREEN_HEIGHT - data.ceiling_h;
 

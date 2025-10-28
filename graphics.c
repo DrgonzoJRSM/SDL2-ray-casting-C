@@ -122,14 +122,10 @@ static uint32_t color_selection(drawing_data* data, int y_coord, bool* vertical_
 }
 
 static void changing_color(float distance_to_wall, uint8_t* r, uint8_t* g, uint8_t* b) {
-	float factor = 1.0f - (distance_to_wall / DEPTH);
+	float factor = 0.85f - (distance_to_wall / DEPTH);
 
 	if (factor < 0.1f) {
 		factor = 0.1f;
-	}
-
-	if (factor > 1.0f) {
-		factor = 1.0f;
 	}
 
 	*r = (uint8_t) (*r * factor);

@@ -12,10 +12,11 @@
 #define FOV 						M_PI / 3 	// Угол обзора игрока
 
 #define MOVEMENT_STEP				0.1 		
-#define ROTATION_STEP				0.02 		// Угол поворота взгляда игрока
+#define ROTATION_STEP				0.025 		// Угол поворота взгляда игрока
 #define EDGE_ANGLE_FACTOR			0.01 		// Коэффициент для рассчета ребер
+#define STEP_PRECISION 				0.01		// Шаг для поиска расстояния до стены
 			
-#define DEPTH						8 			// Дальность прорисовки
+#define DEPTH						10 			// Дальность прорисовки
 
 typedef struct {
 	double x_coord;
