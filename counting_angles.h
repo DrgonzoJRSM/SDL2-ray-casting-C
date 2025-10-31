@@ -4,7 +4,7 @@
 #include "includes.h"
 #include "raycasting.h"
 
-#define NUM_RAYS			SCREEN_WIDTH
+#define NUM_RAYS			RAYS_CONT
 #define NUM_PERSON_ANGLES	((int) (M_PI * 20 / ROTATION_STEP))
     
 #define NON					-1

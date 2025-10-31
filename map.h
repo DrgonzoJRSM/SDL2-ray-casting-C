@@ -3,8 +3,8 @@
 
 #include <stdbool.h>
 
-#define MAP_HEIGHT 		16
-#define MAP_WIDTH 	    16
+#define MAP_HEIGHT 		32
+#define MAP_WIDTH 	    32
 
 extern const bool map[MAP_HEIGHT][MAP_WIDTH];
 

@@ -94,32 +94,32 @@ void sdl_quit() {
     SDL_Quit();
 }
 
-static uint32_t color_selection(drawing_data* data, int y_coord, bool* vertical_edge_flag) {
+// static uint32_t color_selection(drawing_data* data, int y_coord, bool* vertical_edge_flag) {
 
-	if (y_coord < data->ceiling_h) {
-		return VOID_COLOR;
+// 	if (y_coord < data->ceiling_h) {
+// 		return CEIL_COLOR;
 
-	} else if ((y_coord >= data->ceiling_h) && (y_coord <= data->floor_h)) {
+// 	} else if ((y_coord >= data->ceiling_h) && (y_coord <= data->floor_h)) {
 		
-		if (data->edge_flag) {
-			return EDGE_COLOR;
+// 		if (data->edge_flag) {
+// 			return EDGE_COLOR;
 		
-		} else if (!data->edge_flag && ((y_coord == data->ceiling_h) || (y_coord == data->floor_h))) {
-			*vertical_edge_flag = true;
+// 		} else if (!data->edge_flag && ((y_coord == data->ceiling_h) || (y_coord == data->floor_h))) {
+// 			*vertical_edge_flag = true;
 		
-			return EDGE_COLOR;
+// 			return EDGE_COLOR;
 		
-		} else {
-			return WALL_COLOR;
-		}
+// 		} else {
+// 			return WALL_COLOR;
+// 		}
 		
-	} else if (y_coord > data->floor_h) {
-		return FLOOR_COLOR;
+// 	} else if (y_coord > data->floor_h) {
+// 		return FLOOR_COLOR;
 	
-	}
+// 	}
 
-	return VOID_COLOR;
-}
+// 	return VOID_COLOR;
+// }
 
 static void changing_color(float distance_to_wall, uint8_t* r, uint8_t* g, uint8_t* b) {
 	float factor = 0.85f - (distance_to_wall / DEPTH);
@@ -133,33 +133,101 @@ static void changing_color(float distance_to_wall, uint8_t* r, uint8_t* g, uint8
 	*b = (uint8_t) (*b * factor);
 }
 
-void drawing_column(drawing_data* data, int x_coord) {
-	uint32_t color = 0;	
+static void vertical_edge_drawing(SDL_Rect* rect, float distance_to_wall) {
+	uint8_t v_r = GET_R_FROM_COLOR(EDGE_COLOR);
+	uint8_t v_g = GET_G_FROM_COLOR(EDGE_COLOR);
+	uint8_t v_b = GET_B_FROM_COLOR(EDGE_COLOR);	
 
-	bool vertical_edge_flag = false;
-	
-	for (int y_coord = 0; y_coord < SCREEN_HEIGHT; y_coord++) {
-		color = color_selection(data, y_coord, &vertical_edge_flag);
+	changing_color(distance_to_wall, &v_r, &v_g, &v_b);
 
-		uint8_t r = GET_R_FROM_COLOR(color);
-		uint8_t g = GET_G_FROM_COLOR(color);
-		uint8_t b = GET_B_FROM_COLOR(color);
+	SDL_SetRenderDrawColor(render, v_r, v_g, v_b, 0xff);
 
-		if ((color == WALL_COLOR) || (color == EDGE_COLOR)) {
-			changing_color(data->distance_to_wall, &r, &g, &b);
-		}
-
-		SDL_SetRenderDrawColor(render, r, g, b, 0xff);
-
-		SDL_RenderDrawPoint(render, x_coord, y_coord);
-
-		if (vertical_edge_flag) {
-			SDL_RenderDrawPoint(render, x_coord, y_coord - 1);
-			SDL_RenderDrawPoint(render, x_coord, y_coord - 2);
-
-			vertical_edge_flag = false;
-		}
-			
+	for (int i = 0; i < 4; i++) {
+		SDL_RenderDrawPoint(render, rect->x, rect->y + i);
+		SDL_RenderDrawPoint(render, rect->x, rect->y + rect->h - i);
 	}
+
+}
+
+static void rect_drawing(SDL_Rect* rect, uint32_t color, bool edge_flag, float distance_to_wall) {
+	bool vertical_edge_flag = false;
+
+	if (edge_flag && (color == WALL_COLOR)) {
+		color = EDGE_COLOR;
+	} else if (!edge_flag && (color == WALL_COLOR)) {
+		vertical_edge_flag = true;
+	}
+
+	uint8_t r = GET_R_FROM_COLOR(color);
+	uint8_t g = GET_G_FROM_COLOR(color);
+	uint8_t b = GET_B_FROM_COLOR(color);
+
+	if (color == WALL_COLOR || color == EDGE_COLOR) {
+		changing_color(distance_to_wall, &r, &g, &b);
+	}
+
+	SDL_SetRenderDrawColor(render, r, g, b, 0xff);
+
+	SDL_RenderFillRect(render, rect);
+
+	if (vertical_edge_flag) {
+		vertical_edge_drawing(rect, distance_to_wall);
+	}
+
+}
+
+void drawing_column(drawing_data* data, int x_coord) {
+	
+	SDL_Rect ceil_rect = {
+		.h = data->ceiling_h,
+		.w = 1,
+		.x = x_coord,
+		.y = 0
+	};
+
+	SDL_Rect wall_rect = {
+		.h = data->floor_h - data->ceiling_h,
+		.w = 1,
+		.x = x_coord,
+		.y = data->ceiling_h
+	};
+
+	SDL_Rect floor_rect = {
+		.h = SCREEN_HEIGHT - data->floor_h,
+		.w = 1,
+		.x = x_coord,
+		.y = data->floor_h
+	};
+
+	rect_drawing(&ceil_rect, CEIL_COLOR, data->edge_flag, data->distance_to_wall);
+
+	rect_drawing(&wall_rect, WALL_COLOR, data->edge_flag, data->distance_to_wall);
+
+	rect_drawing(&floor_rect, FLOOR_COLOR, data->edge_flag, data->distance_to_wall);
+
+	// OLD VERSION
+	// for (int y_coord = 0; y_coord < SCREEN_HEIGHT; y_coord++) {
+	// 	color = color_selection(data, y_coord, &vertical_edge_flag);
+
+	// 	uint8_t r = GET_R_FROM_COLOR(color);
+	// 	uint8_t g = GET_G_FROM_COLOR(color);
+	// 	uint8_t b = GET_B_FROM_COLOR(color);
+
+	// 	if ((color == WALL_COLOR) || (color == EDGE_COLOR)) {
+	// 		changing_color(data->distance_to_wall, &r, &g, &b);
+	// 	}
+
+	// 	SDL_SetRenderDrawColor(render, r, g, b, 0xff);
+
+	// 	SDL_RenderDrawPoint(render, x_coord, y_coord);
+
+	// 	if (vertical_edge_flag) {
+	// 		SDL_RenderDrawPoint(render, x_coord, y_coord - 1);
+	// 		SDL_RenderDrawPoint(render, x_coord, y_coord - 2);
+
+	// 		vertical_edge_flag = false;
+	// 	}
+			
+	// }
 	
 }

@@ -10,9 +10,11 @@
 #define SCREEN_WIDTH                640
 #define SCREEN_HEIGHT               320
 
+#define RAYS_CONT                   SCREEN_WIDTH
+
+#define CEIL_COLOR					0x918a74
 #define WALL_COLOR					0xfab802	
 #define EDGE_COLOR					0xf2da96
-#define VOID_COLOR					0x918a74
 #define FLOOR_COLOR					0x63593b
 
 #define GET_R_FROM_COLOR(color)		(((color) >> 16) & 0xFF)

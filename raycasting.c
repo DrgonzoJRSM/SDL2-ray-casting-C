@@ -65,7 +65,7 @@ static bool counting_edge_flag(person* pr, double test_x, double test_y, double 
 
 void ray_casting(person* pr) {
 
-	for (int x_coord = 0; x_coord < SCREEN_WIDTH; x_coord++) {	
+	for (int x_coord = 0; x_coord < RAYS_CONT; x_coord++) {	
 		drawing_data data = {0};
 		
 		double ray_x = fast_sin(NON, pr->angle) * fast_cos(x_coord, NON) + fast_cos(NON, pr->angle) * fast_sin(x_coord, NON);
