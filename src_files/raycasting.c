@@ -1,18 +1,18 @@
-#include "raycasting.h"
+#include "../header_files/raycasting.h"
 
 // static int compare(const void* a, const void* b) {
-	// const edge_data* edge_a = (const edge_data*) a;
-	// const edge_data* edge_b = (const edge_data*) b;
-// 
-	// if (edge_a->module < edge_b->module) {
-		// return -1;
-	// }
-// 
-	// if (edge_a->module > edge_b->module) {
-		// return 1;
-	// }
-// 
-	// return 0;
+// 	const edge_data* edge_a = (const edge_data*) a;
+// 	const edge_data* edge_b = (const edge_data*) b;
+
+// 	if (edge_a->module < edge_b->module) {
+// 		return -1;
+// 	}
+
+// 	if (edge_a->module > edge_b->module) {
+// 		return 1;
+// 	}
+
+// 	return 0;
 // }
 
 static void sort_edges(edge_data* edges, int size) {
@@ -63,6 +63,14 @@ static bool counting_edge_flag(person* pr, double test_x, double test_y, double 
 	return edge_flag;	
 }
 
+#ifdef USE_TEXTURES
+	static double search_image_x_coord(double ray_x, double ray_y, person* pr, double distance_to_wall) {
+		double image_x_coord = 0;
+
+		return image_x_coord;
+	}
+#endif
+
 void ray_casting(person* pr) {
 
 	for (int x_coord = 0; x_coord < RAYS_CONT; x_coord++) {	
@@ -92,6 +100,10 @@ void ray_casting(person* pr) {
 			
 		}
 
+		#ifdef USE_TEXTURES
+			data.image_x_coord = search_image_x_coord(ray_x, ray_x, pr, data.distance_to_wall);
+		#endif
+		
 		data.distance_to_wall = data.distance_to_wall * fast_cos(x_coord, NON);
 		data.ceiling_h = (int) (SCREEN_HEIGHT / 2 - SCREEN_HEIGHT / data.distance_to_wall);
 		data.floor_h = SCREEN_HEIGHT - data.ceiling_h;

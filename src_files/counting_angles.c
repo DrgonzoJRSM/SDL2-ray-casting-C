@@ -1,4 +1,4 @@
-#include "counting_angles.h"
+#include "../header_files/counting_angles.h"
 
 static calculated_angles *rays_angles = NULL;
 static calculated_angles *person_angles = NULL;

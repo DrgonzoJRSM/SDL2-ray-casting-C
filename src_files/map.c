@@ -1,4 +1,4 @@
-#include "map.h"
+#include "../header_files/map.h"
 
 const bool map[MAP_HEIGHT][MAP_WIDTH] = {
 

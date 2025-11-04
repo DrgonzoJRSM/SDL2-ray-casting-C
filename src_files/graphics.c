@@ -1,13 +1,17 @@
-#include "graphics.h"
+#include "../header_files/graphics.h"
 
 extern SDL_Window* window = NULL;
 extern SDL_Renderer* render = NULL;
 extern SDL_Texture* texture = NULL;
 
-// extern const char* file_location = "image/1.bmp";
+#ifdef USE_TEXTURES
+	const char* file_location = "image/2.png";
 
-// extern int rect_width = 0;
-// extern int rect_height = 0;
+	SDL_Texture* image_texture = NULL;
+
+	int image_height = 0;
+	int image_width = 0;
+#endif
 
 void sdl_init(char* win_name) {
 
@@ -16,6 +20,16 @@ void sdl_init(char* win_name) {
 
         exit(EXIT_FAILURE);
     }
+
+	#ifdef USE_TEXTURES
+		int flag =  IMG_INIT_JPG;
+
+		if (!(IMG_Init(flag) & flag)) {
+			fprintf(stderr, "SDL_Image init failed!\n%s\n", IMG_GetError());      
+
+			exit(EXIT_FAILURE);
+		}
+	#endif
 
     window = SDL_CreateWindow(
         win_name, 
@@ -56,30 +70,31 @@ void sdl_init(char* win_name) {
 
 }
 
-// void bmp_load(const char* file_name) {
-//     SDL_Surface* picture = SDL_LoadBMP(file_name);
+#ifdef USE_TEXTURES
+	void img_load() {
+		SDL_Surface* image = IMG_Load(TEXTURE_FILE);
 
-//     if (picture == NULL) {
-//         fprintf(stderr, "file.pmp load failed!\n%s\n", SDL_GetError());
+		if (image == NULL) {
+			fprintf(stderr, "file.png load failed!\n%s\n", IMG_GetError());
 
-//         exit(EXIT_FAILURE);
-//     }
+			exit(EXIT_FAILURE);
+		}
 
-//     texture = SDL_CreateTextureFromSurface(render, picture);
+		image_height = image->h;
+		image_width = image->w;
 
-//     if (texture == NULL) {
-//         fprintf(stderr, "Texture creating failed!\n%s\n", SDL_GetError());
+		image_texture = SDL_CreateTextureFromSurface(render, image);
 
-//         exit(EXIT_FAILURE);
-//     }
+		if (image_texture == NULL) {
+			fprintf(stderr, "Texture creating failed!\n%s\n", SDL_GetError());
 
-//     rect_width = picture->w;
-//     rect_height = picture->h;
+			exit(EXIT_FAILURE);
+		}
 
-//     SDL_FreeSurface(picture);
-//     picture = NULL;
-
-// }
+		SDL_FreeSurface(image);
+		image = NULL;
+	}
+#endif
 
 void sdl_quit() {
     SDL_DestroyWindow(window);
@@ -91,35 +106,16 @@ void sdl_quit() {
     SDL_DestroyTexture(texture);
     texture = NULL;
 
-    SDL_Quit();
+	SDL_Quit();
+
+	#ifdef USE_TEXTURES 
+		SDL_DestroyTexture(image_texture);
+		image_texture = NULL;
+		
+		
+		IMG_Quit();
+	#endif
 }
-
-// static uint32_t color_selection(drawing_data* data, int y_coord, bool* vertical_edge_flag) {
-
-// 	if (y_coord < data->ceiling_h) {
-// 		return CEIL_COLOR;
-
-// 	} else if ((y_coord >= data->ceiling_h) && (y_coord <= data->floor_h)) {
-		
-// 		if (data->edge_flag) {
-// 			return EDGE_COLOR;
-		
-// 		} else if (!data->edge_flag && ((y_coord == data->ceiling_h) || (y_coord == data->floor_h))) {
-// 			*vertical_edge_flag = true;
-		
-// 			return EDGE_COLOR;
-		
-// 		} else {
-// 			return WALL_COLOR;
-// 		}
-		
-// 	} else if (y_coord > data->floor_h) {
-// 		return FLOOR_COLOR;
-	
-// 	}
-
-// 	return VOID_COLOR;
-// }
 
 static void changing_color(float distance_to_wall, uint8_t* r, uint8_t* g, uint8_t* b) {
 	float factor = 0.85f - (distance_to_wall / DEPTH);
@@ -185,6 +181,8 @@ void drawing_column(drawing_data* data, int x_coord) {
 		.y = 0
 	};
 
+	rect_drawing(&ceil_rect, CEIL_COLOR, data->edge_flag, data->distance_to_wall);
+
 	SDL_Rect wall_rect = {
 		.h = data->floor_h - data->ceiling_h,
 		.w = 1,
@@ -192,6 +190,19 @@ void drawing_column(drawing_data* data, int x_coord) {
 		.y = data->ceiling_h
 	};
 
+	#ifdef USE_TEXTURES
+		SDL_Rect src_rect = {
+			.h = image_height,
+			.w = 1,
+			.x = (int)data->image_x_coord,
+			.y = 0
+		};
+
+		SDL_RenderCopy(render, image_texture, &src_rect, &wall_rect);
+	#else
+		rect_drawing(&wall_rect, WALL_COLOR, data->edge_flag, data->distance_to_wall);
+	#endif
+		
 	SDL_Rect floor_rect = {
 		.h = SCREEN_HEIGHT - data->floor_h,
 		.w = 1,
@@ -199,35 +210,5 @@ void drawing_column(drawing_data* data, int x_coord) {
 		.y = data->floor_h
 	};
 
-	rect_drawing(&ceil_rect, CEIL_COLOR, data->edge_flag, data->distance_to_wall);
-
-	rect_drawing(&wall_rect, WALL_COLOR, data->edge_flag, data->distance_to_wall);
-
 	rect_drawing(&floor_rect, FLOOR_COLOR, data->edge_flag, data->distance_to_wall);
-
-	// OLD VERSION
-	// for (int y_coord = 0; y_coord < SCREEN_HEIGHT; y_coord++) {
-	// 	color = color_selection(data, y_coord, &vertical_edge_flag);
-
-	// 	uint8_t r = GET_R_FROM_COLOR(color);
-	// 	uint8_t g = GET_G_FROM_COLOR(color);
-	// 	uint8_t b = GET_B_FROM_COLOR(color);
-
-	// 	if ((color == WALL_COLOR) || (color == EDGE_COLOR)) {
-	// 		changing_color(data->distance_to_wall, &r, &g, &b);
-	// 	}
-
-	// 	SDL_SetRenderDrawColor(render, r, g, b, 0xff);
-
-	// 	SDL_RenderDrawPoint(render, x_coord, y_coord);
-
-	// 	if (vertical_edge_flag) {
-	// 		SDL_RenderDrawPoint(render, x_coord, y_coord - 1);
-	// 		SDL_RenderDrawPoint(render, x_coord, y_coord - 2);
-
-	// 		vertical_edge_flag = false;
-	// 	}
-			
-	// }
-	
 }

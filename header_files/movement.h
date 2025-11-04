@@ -3,6 +3,8 @@
 
 #include <SDL2/SDL.h>
 
+#include <math.h>
+
 #include "includes.h"
 #include "raycasting.h"
 

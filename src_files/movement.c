@@ -1,4 +1,4 @@
-#include "movement.h"
+#include "../header_files/movement.h"
 
 void person_movement(person* pr, SDL_KeyCode key) {
 	double calc_sin = fast_sin(NON, pr->angle);

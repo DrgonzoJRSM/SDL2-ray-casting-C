@@ -1,13 +1,11 @@
 #include <SDL2/SDL.h>
 
-#include "includes.h"
-
-#include "counting_angles.h"
-#include "graphics.h"
-#include "movement.h"
-#include "raycasting.h"
-
-
+#include "header_files/config.h"
+#include "header_files/includes.h"
+#include "header_files/raycasting.h"
+#include "header_files/counting_angles.h"
+#include "header_files/graphics.h"
+#include "header_files/movement.h"
 
 int main() {
     srand(time(NULL));
@@ -20,8 +18,12 @@ int main() {
 		.angle = 0
 	};
 
-    sdl_init("first");    
+    sdl_init("first");
 
+    #ifdef USE_TEXTURES
+        img_load();
+    #endif
+    
     bool run = true;
     
     SDL_Event event;
@@ -32,6 +34,7 @@ int main() {
             switch (event.type) {
                 case SDL_QUIT:
                     run = false;
+                    
                     break;
                 
                 case SDL_KEYDOWN:
@@ -54,7 +57,7 @@ int main() {
 
         SDL_RenderPresent(render);
 
-        SDL_Delay(16);
+        SDL_Delay(DELAY_MS);
     }
 
     free_arrays();

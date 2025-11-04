@@ -1,18 +1,20 @@
 CC = gcc
 
 CFLAGS = -Wall -Wextra 
-LDFLAGS = -lSDL2 -lm
+LDFLAGS = -lSDL2 -lSDL2_image -lm
 
 TARGET = first
 
 SRC = main.c raycasting.c counting_angles.c graphics.c movement.c map.c
 
-OBJ_DIR = obj
+OBJ_DIR = obj_files
+HEADER_DIR = header_files
+SRC_DIR = src_files
+
 OBJ = $(SRC:%.c=$(OBJ_DIR)/%.o)
 
 .PHONY: all clean
 
- 
 all: $(OBJ_DIR) $(TARGET)
  
 $(OBJ_DIR):
@@ -21,22 +23,22 @@ $(OBJ_DIR):
 $(TARGET): $(OBJ)
 	$(CC) $^ $(LDFLAGS) -o $@ 
 
-$(OBJ_DIR)/main.o: main.c includes.h raycasting.h counting_angles.h graphics.h movement.h
+$(OBJ_DIR)/main.o: main.c $(HEADER_DIR)/config.h $(HEADER_DIR)/includes.h $(HEADER_DIR)/raycasting.h $(HEADER_DIR)/counting_angles.h $(HEADER_DIR)/graphics.h $(HEADER_DIR)/movement.h
 	$(CC) $(CFLAGS) -c $< -o $@ 
 
-$(OBJ_DIR)/movement.o: movement.c includes.h raycasting.h movement.h counting_angles.h
+$(OBJ_DIR)/movement.o: $(SRC_DIR)/movement.c $(HEADER_DIR)/movement.h $(HEADER_DIR)/includes.h $(HEADER_DIR)/raycasting.h 
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(OBJ_DIR)/raycasting.o: raycasting.c includes.h map.h counting_angles.h graphics.h drawing_data.h raycasting.h
+$(OBJ_DIR)/raycasting.o: $(SRC_DIR)/raycasting.c $(HEADER_DIR)/raycasting.h $(HEADER_DIR)/config.h $(HEADER_DIR)/includes.h $(HEADER_DIR)/map.h $(HEADER_DIR)/counting_angles.h $(HEADER_DIR)/graphics.h $(HEADER_DIR)/drawing_data.h 
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(OBJ_DIR)/counting_angles.o: counting_angles.c includes.h counting_angles.h raycasting.h
+$(OBJ_DIR)/counting_angles.o: $(SRC_DIR)/counting_angles.c $(HEADER_DIR)/counting_angles.h $(HEADER_DIR)/includes.h $(HEADER_DIR)/raycasting.h
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(OBJ_DIR)/graphics.o: graphics.c includes.h graphics.h drawing_data.h
+$(OBJ_DIR)/graphics.o: $(SRC_DIR)/graphics.c $(HEADER_DIR)/graphics.h $(HEADER_DIR)/config.h $(HEADER_DIR)/includes.h $(HEADER_DIR)/drawing_data.h
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(OBJ_DIR)/map.o: map.c map.h
+$(OBJ_DIR)/map.o: $(SRC_DIR)/map.c $(HEADER_DIR)/map.h
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
