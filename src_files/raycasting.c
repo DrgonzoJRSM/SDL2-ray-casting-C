@@ -64,16 +64,16 @@ static bool counting_edge_flag(person* pr, double test_x, double test_y, double 
 }
 
 #ifdef USE_TEXTURES
-	static double search_image_x_coord(double ray_x, double ray_y, person* pr, double distance_to_wall) {
-		double image_x_coord = 0;
+static double search_image_x_coord(person* pr, double ray_x, double ray_y, double distance_to_wall) {
+	return 0;
+}
 
-		return image_x_coord;
-	}
 #endif
+
 
 void ray_casting(person* pr) {
 
-	for (int x_coord = 0; x_coord < RAYS_CONT; x_coord++) {	
+	for (int x_coord = 0; x_coord < RAYS_COUNT; x_coord++) {	
 		drawing_data data = {0};
 		
 		double ray_x = fast_sin(NON, pr->angle) * fast_cos(x_coord, NON) + fast_cos(NON, pr->angle) * fast_sin(x_coord, NON);
@@ -95,18 +95,19 @@ void ray_casting(person* pr) {
 				data.distance_to_wall = DEPTH;
 			} else if (map[test_y][test_x]) {
 				wall_flag = true;
+				data.distance_to_wall -= STEP_PRECISION;
 				data.edge_flag = counting_edge_flag(pr, test_x, test_y, ray_x, ray_y, data.distance_to_wall);
 			} 
 			
 		}
-
-		#ifdef USE_TEXTURES
-			data.image_x_coord = search_image_x_coord(ray_x, ray_x, pr, data.distance_to_wall);
-		#endif
 		
-		data.distance_to_wall = data.distance_to_wall * fast_cos(x_coord, NON);
+		data.distance_to_wall = data.distance_to_wall * fast_cos(x_coord, NON);;
 		data.ceiling_h = (int) (SCREEN_HEIGHT / 2 - SCREEN_HEIGHT / data.distance_to_wall);
 		data.floor_h = SCREEN_HEIGHT - data.ceiling_h;
+
+		#ifdef USE_TEXTURES
+			data.image_x_coord = search_image_x_coord(pr, ray_x, ray_y, data.distance_to_wall);
+		#endif
 
 		SDL_SetRenderTarget(render, texture);
 

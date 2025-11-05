@@ -32,7 +32,7 @@ $(OBJ_DIR)/movement.o: $(SRC_DIR)/movement.c $(HEADER_DIR)/movement.h $(HEADER_D
 $(OBJ_DIR)/raycasting.o: $(SRC_DIR)/raycasting.c $(HEADER_DIR)/raycasting.h $(HEADER_DIR)/config.h $(HEADER_DIR)/includes.h $(HEADER_DIR)/map.h $(HEADER_DIR)/counting_angles.h $(HEADER_DIR)/graphics.h $(HEADER_DIR)/drawing_data.h 
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(OBJ_DIR)/counting_angles.o: $(SRC_DIR)/counting_angles.c $(HEADER_DIR)/counting_angles.h $(HEADER_DIR)/includes.h $(HEADER_DIR)/raycasting.h
+$(OBJ_DIR)/counting_angles.o: $(SRC_DIR)/counting_angles.c $(HEADER_DIR)/counting_angles.h $(HEADER_DIR)/config.h $(HEADER_DIR)/includes.h $(HEADER_DIR)/raycasting.h
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(OBJ_DIR)/graphics.o: $(SRC_DIR)/graphics.c $(HEADER_DIR)/graphics.h $(HEADER_DIR)/config.h $(HEADER_DIR)/includes.h $(HEADER_DIR)/drawing_data.h

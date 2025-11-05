@@ -1,12 +1,10 @@
 #include "../header_files/graphics.h"
 
-extern SDL_Window* window = NULL;
-extern SDL_Renderer* render = NULL;
-extern SDL_Texture* texture = NULL;
+SDL_Window* window = NULL;
+SDL_Renderer* render = NULL;
+SDL_Texture* texture = NULL;
 
 #ifdef USE_TEXTURES
-	const char* file_location = "image/2.png";
-
 	SDL_Texture* image_texture = NULL;
 
 	int image_height = 0;
@@ -194,7 +192,7 @@ void drawing_column(drawing_data* data, int x_coord) {
 		SDL_Rect src_rect = {
 			.h = image_height,
 			.w = 1,
-			.x = (int)data->image_x_coord,
+			.x = (int) (data->image_x_coord * image_width),
 			.y = 0
 		};
 

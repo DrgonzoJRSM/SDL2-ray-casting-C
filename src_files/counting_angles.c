@@ -4,10 +4,10 @@ static calculated_angles *rays_angles = NULL;
 static calculated_angles *person_angles = NULL;
 
 void counting_angles() {
-	double ray_angle = 0;
+	double angles = 0;
 	int index = 0;
 
-	rays_angles = malloc(NUM_RAYS * sizeof(calculated_angles));
+	rays_angles = malloc(RAYS_COUNT * sizeof(calculated_angles));
 
 	if (!rays_angles) {
 	    fprintf(stderr, "Memory allocation failed for rays_angles\n");
@@ -21,11 +21,11 @@ void counting_angles() {
         exit(EXIT_FAILURE);
     }
 
-	for (int i = 0; i < NUM_RAYS; i++) {
-		ray_angle = FOV / 2 - i * FOV / SCREEN_WIDTH;
+	for (int i = 0; i < RAYS_COUNT; i++) {
+		angles = FOV / 2 - i * FOV / (RAYS_COUNT - 1);
 	
-		rays_angles[i].c_cos = cos(ray_angle);
-		rays_angles[i].c_sin = sin(ray_angle);
+		rays_angles[i].c_cos = cos(angles);
+		rays_angles[i].c_sin = sin(angles);
 	}
 
 	for (double i = 0; i < (M_PI * 2); i += ROTATION_STEP) {
